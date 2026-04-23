@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   kiro-gateway:
     build:
@@ -18,7 +16,7 @@ services:
 
       # Required: Set your proxy API key
       # You can also use .env file (see env_file below)
-      # - PROXY_API_KEY=${PROXY_API_KEY:-my-super-secret-password-123}
+      - PROXY_API_KEY=${PROXY_API_KEY:-my-super-secret-password-123}
 
       # Authentication (choose one method)
       # Option 1: Refresh token
@@ -41,9 +39,9 @@ services:
       # VPN/Proxy settings (for restricted networks)
       # - VPN_PROXY_URL=${VPN_PROXY_URL:-}
 
-    # Alternative: Load all variables from .env file
-    # env_file:
-    #   - .env
+    # Load variables from .env file
+    env_file:
+      - .env
 
     volumes:
       # Mount credentials file (if using KIRO_CREDS_FILE)
