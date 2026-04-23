@@ -5,10 +5,12 @@ FROM python:3.10-slim
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+    PYTHONDONTWRITEBYTECODE=1 \
+    UV_CACHE_DIR=/app/.cache/uv \
+    UV_NO_DEV=1
 
-# Create non-root user for security
-RUN groupadd -r kiro && useradd -r -g kiro kiro
+# Create non-root user for security (UID 1000 for host volume compatibility)
+RUN groupadd -g 1000 kiro && useradd -u 1000 -g kiro kiro
 
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
@@ -18,16 +20,21 @@ WORKDIR /app
 
 # Install dependencies first (better layer caching)
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-dev --no-install-project
+RUN --mount=type=secret,id=uv_index_artifactory_username,env=UV_INDEX_ARTIFACTORY_USERNAME \
+    --mount=type=secret,id=uv_index_artifactory_password,env=UV_INDEX_ARTIFACTORY_PASSWORD \
+    uv sync --frozen --no-dev --no-install-project
 
 # Copy application code
 COPY --chown=kiro:kiro . .
 
 # Install the project itself
-RUN uv sync --frozen --no-dev
+RUN --mount=type=secret,id=uv_index_artifactory_username,env=UV_INDEX_ARTIFACTORY_USERNAME \
+    --mount=type=secret,id=uv_index_artifactory_password,env=UV_INDEX_ARTIFACTORY_PASSWORD \
+    uv sync --frozen --no-dev
 
-# Create directory for debug logs with proper permissions
-RUN mkdir -p debug_logs && chown -R kiro:kiro debug_logs
+# Create directories with proper permissions for non-root user
+RUN mkdir -p debug_logs .cache/uv && \
+    chown -R kiro:kiro debug_logs .cache/uv
 
 # Switch to non-root user
 USER kiro

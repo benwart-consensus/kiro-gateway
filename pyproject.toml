@@ -27,6 +27,11 @@ python_functions = ["test_*"]
 pythonpath = ["."]
 norecursedirs = [".git", "__pycache__", "old", "requests", "_notes"]
 
+[[tool.uv.index]]
+name = "artifactory"
+url = "https://artifactory.ops.ccs.biz/artifactory/api/pypi/phx-pypi/simple"
+publish-url = "https://artifactory.ops.ccs.biz/artifactory/api/pypi/phx-pypi"
+
 [tool.uv.build-backend]
 module-name = "kiro"
 module-root = ""

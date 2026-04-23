@@ -5,6 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      secrets:
+        - uv_index_artifactory_username
+        - uv_index_artifactory_password
     container_name: kiro-gateway
     ports:
       - "2234:8000"
@@ -25,7 +28,7 @@ services:
       # - PROFILE_ARN=${PROFILE_ARN:-}
 
       # Option 3: Credentials file path (mounted as volume below)
-      - KIRO_CREDS_FILE=${KIRO_CREDS_FILE:-}
+      - KIRO_CREDS_FILE=/app/.aws-cache/kiro-auth-token.json
 
       # Option 4: kiro-cli SQLite database (mounted as volume below)
       #- KIRO_CLI_DB_FILE=${KIRO_CLI_DB_FILE:-}
@@ -45,7 +48,7 @@ services:
     volumes:
       # Mount credentials file (if using KIRO_CREDS_FILE)
       # Uncomment and adjust path as needed:
-      - ~/.aws/sso/cache:/Users/ben.wart/.aws/sso/cache:ro
+      - ~/.aws/sso/cache:/app/.aws-cache:ro
 
       # Mount kiro-cli database (if using KIRO_CLI_DB_FILE)
       # Uncomment and adjust path as needed:
@@ -54,7 +57,7 @@ services:
       # Mount debug logs directory (optional, for debugging)
       # - ./debug_logs:/app/debug_logs
 
-    # restart: unless-stopped
+    restart: unless-stopped
 
     # Health check
     healthcheck:
@@ -83,6 +86,8 @@ services:
           cpus: "0.5" # Minimum guaranteed CPU
           memory: 256M # Minimum guaranteed memory
 
-networks:
-  default:
-    name: kiro-gateway-network
+secrets:
+  uv_index_artifactory_username:
+    environment: UV_INDEX_ARTIFACTORY_USERNAME
+  uv_index_artifactory_password:
+    environment: UV_INDEX_ARTIFACTORY_PASSWORD
