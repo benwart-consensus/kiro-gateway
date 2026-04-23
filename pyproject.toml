@@ -1,0 +1,36 @@
+[project]
+name = "kiro-gateway"
+version = "2.4-dev.7"
+description = "Proxy gateway for Kiro API (Amazon Q Developer / AWS CodeWhisperer). OpenAI and Anthropic compatible."
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+requires-python = ">=3.10"
+authors = [{ name = "Jwadow" }]
+
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "httpx",
+    "loguru",
+    "python-dotenv",
+    "tiktoken",
+]
+
+[dependency-groups]
+dev = ["pytest", "pytest-asyncio", "hypothesis"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+pythonpath = ["."]
+norecursedirs = [".git", "__pycache__", "old", "requests", "_notes"]
+
+[tool.uv.build-backend]
+module-name = "kiro"
+module-root = ""
+
+[build-system]
+requires = ["uv_build>=0.11.7,<0.12"]
+build-backend = "uv_build"

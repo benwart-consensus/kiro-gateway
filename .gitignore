@@ -7,6 +7,9 @@
 .idea/
 .shard/
 
+# Virtual environment
+.venv/
+
 # Python
 __pycache__/
 *.py[cod]
